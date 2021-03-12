@@ -1,4 +1,4 @@
-# GUI.py
+# IR829.py
 
 import PySimpleGUI as sg
 import pandas as pd
@@ -6,7 +6,7 @@ import os
 
 
 def openFile():
-    with open('/Users/adiav/Desktop/Boyce_Technologies_Work/Config_Writer_With_Gui/configDefault.cfg') as file:
+    with open('/Users/adiav/Desktop/Boyce_Technologies_Work/Config_Writer_With_Gui/IR829Default.cfg') as file:
         content = file.readlines()
 
     content = [x.strip('\n') for x in content]
@@ -64,7 +64,7 @@ layout = [ [sg.Text("Choose a csv file:\t\t"), sg.Input(key="-IN2-" ,change_subm
 ]
 
 # Create the Window
-window = sg.Window('Test', layout).Finalize()
+window = sg.Window('IR829 Config Writer', layout).Finalize()
 
 while True:             # Event Loop
     event, values = window.Read()
