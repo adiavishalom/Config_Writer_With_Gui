@@ -266,3 +266,4 @@ ip sla 2
  timeout 10000
  frequency 30
 ip sla schedule 2 life forever start-time now
+snmp-server trap-source Vlan73
