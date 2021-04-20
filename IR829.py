@@ -71,7 +71,7 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         'ip route 10.228.9.128 255.255.255.224 ' + routeip + ' name BRCC-EBCSMGMTVLAN track 3',
                         'ip route 10.228.9.160 255.255.255.224 ' + routeip + ' name BRCC-EBCSWSAVLAN track 3',
                         'ip route 0.0.0.0 0.0.0.0 ' + routeip + ' name DEFAULT-ROUTE',
-                        'ip route 10.0.75.0 255.255.255.0 ' + routeip + ' name TEMP-CONNECTION-TO-EBCS-LAB','
+                        'ip route 10.0.75.0 255.255.255.0 ' + routeip + ' name TEMP-CONNECTION-TO-EBCS-LAB',
                         'ip route 10.228.8.32 255.255.255.252 ' + routeip + ' name RCC-EBCSCOREIPSLA',
                         'ip route 10.228.8.224 255.255.255.248 ' + routeip + ' name RCCEBCSDISTRIBUTION-IPSLA',
                         'ip route 10.228.9.32 255.255.255.252 ' + routeip + ' name BRCC-EBCSCOREIPSLA',
