@@ -75,7 +75,7 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         'ip route 10.228.8.32 255.255.255.252 ' + routeip + ' name RCC-EBCSCOREIPSLA',
                         'ip route 10.228.8.224 255.255.255.248 ' + routeip + ' name RCCEBCSDISTRIBUTION-IPSLA',
                         'ip route 10.228.9.32 255.255.255.252 ' + routeip + ' name BRCC-EBCSCOREIPSLA',
-                        'ip route 10.228.9.224 255.255.255.248 ' + routeip + ' name BRCCEBCSDISTRIBUTION-IPSLA'
+                        'ip route 10.228.9.224 255.255.255.248 ' + routeip + ' name BRCCEBCSDISTRIBUTION-IPSLA',
                         '!',
                         'ip access-list extended rcc_brcc_acl',
                         ' remark PERMIT VLAN73 Network to VLAN73 Network',
