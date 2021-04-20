@@ -47,16 +47,17 @@ def inputValuesRegular(mrnumber, ip, subnet):
     ip=str(ip)
     subnet=str(subnet)
     
-    secondaryip = ip[:-1] + str(int(ip[-1])-4)
-    routeip = ip[:-1] + str(int(ip[-1])-5)
-    permitip = ip[:-1] + str(int(ip[-1])-6)
+    secondaryip = ip[:-2] + str(int(ip[-2:])+4)
+    routeip = ip[:-2] + str(int(ip[-2:])-1)
+    permitip = ip[:-2] + str(int(ip[-2:])-2)
         
     outputList.extend(['hostname MR' + mrnumber +'-IR829',
                         'interface Vlan73',
                         ' description EBCS-Vlan',
-                        ' ip address ' + ip + ' ' + subnet + ' secondary',
-                        ' ip address ' + secondaryip + ' ' + subnet,
+                        ' ip address ' + secondaryip + ' ' + subnet + ' secondary',
+                        ' ip address ' + ip + ' ' + subnet,
                         ' no ip redirects',
+                        'snmp-server trap-source Vlan73',
                         '',
                         'ip route 10.228.8.0 255.255.255.248 ' + routeip + ' name RCC-EBCSP2P track 3',
                         'ip route 10.228.8.0 255.255.255.192 ' + routeip + ' name RCC-EBCSP2P track 3',
@@ -70,12 +71,12 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         'ip route 10.228.9.128 255.255.255.224 ' + routeip + ' name BRCC-EBCSMGMTVLAN track 3',
                         'ip route 10.228.9.160 255.255.255.224 ' + routeip + ' name BRCC-EBCSWSAVLAN track 3',
                         'ip route 0.0.0.0 0.0.0.0 ' + routeip + ' name DEFAULT-ROUTE',
+                        'ip route 10.0.75.0 255.255.255.0 ' + routeip + ' name TEMP-CONNECTION-TO-EBCS-LAB','
                         'ip route 10.228.8.32 255.255.255.252 ' + routeip + ' name RCC-EBCSCOREIPSLA',
                         'ip route 10.228.8.224 255.255.255.248 ' + routeip + ' name RCCEBCSDISTRIBUTION-IPSLA',
                         'ip route 10.228.9.32 255.255.255.252 ' + routeip + ' name BRCC-EBCSCOREIPSLA',
                         'ip route 10.228.9.224 255.255.255.248 ' + routeip + ' name BRCCEBCSDISTRIBUTION-IPSLA'
-                        '',
-                        '',
+                        '!',
                         'ip access-list extended rcc_brcc_acl',
                         ' remark PERMIT VLAN73 Network to VLAN73 Network',
                         ' permit ip ' + permitip + ' 0.0.0.7 ' + permitip + ' 0.0.0.7',
@@ -85,21 +86,26 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         ' permit ip 10.228.9.0 0.0.0.225 ' + permitip + ' 0.0.0.7',
                         ' remark DENY ANYTHING ELSE',
                         ' deny   ip any any',
-                        '',
+                        '!',
                         'ip sla 1',
-                        ' icmp-echo 10.228.8.225 source-ip ' + ip + '',
+                        ' icmp-echo 10.228.8.225 source-ip ' + secondaryip + '',
                         ' tag RCC-DISTRIBUTION-IPSLA-VLAN',
                         ' timeout 10000',
                         ' frequency 30',
                         'ip sla schedule 1 life forever start-time now',
-                        '',
+                        '!',
+                        'exit',
+                        '!',
                         'ip sla 2',
-                        ' icmp-echo 10.228.9.225 source-ip ' + ip + '',
+                        ' icmp-echo 10.228.9.225 source-ip ' + secondaryip,
                         ' tag BRCC-DISTRIBUTION-IPSLA-VLAN',
                         ' timeout 10000',
                         ' frequency 30',
                         'ip sla schedule 2 life forever start-time now',
-                        'snmp-server trap-source Vlan73'])
+                        '!',
+                        'exit',
+                        '!',
+                        'wr'])
 
 
     filename = mrnumber +'-IR829.txt'
@@ -115,9 +121,9 @@ def inputValuesYML(mrnumber, ip, subnet):
     ip=str(ip)
     subnet=str(subnet)
     
-    secondaryip = ip[:-1] + str(int(ip[-1])-4)
-    routeip = ip[:-1] + str(int(ip[-1])-5)
-    permitip = ip[:-1] + str(int(ip[-1])-6)
+    secondaryip = ip[:-2] + str(int(ip[-2:])+4)
+    routeip = ip[:-2] + str(int(ip[-2:])-1)
+    permitip = ip[:-2] + str(int(ip[-2:])-2)
         
     outputList.extend(['hostname MR' + mrnumber +'-IR829',
                         'interface Vlan73',
