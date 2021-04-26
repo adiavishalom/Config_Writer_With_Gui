@@ -6,7 +6,7 @@ import os
 
 
 def openFile():
-    with open('/Users/adiav/Desktop/Boyce_Technologies_Work/Config_Writer_With_Gui/IR829Default.txt') as file:
+    with open('/Users/aavishalom/Desktop/BackupData/GUIConfig/Config_Writer_With_Gui/IR829Default.txt') as file:
         content = file.readlines()
 
     content = [x.strip('\n') for x in content]
@@ -58,6 +58,7 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         ' ip address ' + ip + ' ' + subnet,
                         ' no ip redirects',
                         'snmp-server trap-source Vlan73',
+                        'no ip igmp snooping vlan 73',
                         '',
                         'ip route 10.228.8.0 255.255.255.248 ' + routeip + ' name RCC-EBCSP2P track 3',
                         'ip route 10.228.8.0 255.255.255.192 ' + routeip + ' name RCC-EBCSP2P track 3',
@@ -94,8 +95,6 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         ' frequency 30',
                         'ip sla schedule 1 life forever start-time now',
                         '!',
-                        'exit',
-                        '!',
                         'ip sla 2',
                         ' icmp-echo 10.228.9.225 source-ip ' + secondaryip,
                         ' tag BRCC-DISTRIBUTION-IPSLA-VLAN',
@@ -106,7 +105,6 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         'exit',
                         '!',
                         'wr'])
-
 
     filename = mrnumber +'-IR829.txt'
     

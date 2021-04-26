@@ -205,3 +205,57 @@ no iox recovery-enable
 wr
 
 ###U#N#I#Q#U#E###V#A#R#I#A#B#L#E#S###
+hostname MR418-IR829
+interface Vlan73
+ description EBCS-Vlan
+ ip address 10.141.41.22 255.255.255.240 secondary
+ ip address 10.141.41.18 255.255.255.240
+ no ip redirects
+snmp-server trap-source Vlan73
+no ip igmp snooping vlan 73
+
+ip route 10.228.8.0 255.255.255.248 10.141.41.17 name RCC-EBCSP2P track 3
+ip route 10.228.8.0 255.255.255.192 10.141.41.17 name RCC-EBCSP2P track 3
+ip route 10.228.8.64 255.255.255.192 10.141.41.17 name RCC-EBCSSERVERVLAN track 3
+ip route 10.228.8.128 255.255.255.224 10.141.41.17 name RCC-EBCSMGMTVLAN track 3
+ip route 10.228.8.160 255.255.255.224 10.141.41.17 name RCC-EBCSWSAVLAN track 3
+ip route 10.228.8.192 255.255.255.224 10.141.41.17 name RCC-EBCSWSBVLAN track 3
+ip route 10.228.9.0 255.255.255.248 10.141.41.17 name BRCC-EBCSP2P track 3
+ip route 10.228.9.0 255.255.255.192 10.141.41.17 name BRCC-EBCSP2P track 3
+ip route 10.228.9.64 255.255.255.192 10.141.41.17 name BRCC-EBCSSERVERVLAN track 3
+ip route 10.228.9.128 255.255.255.224 10.141.41.17 name BRCC-EBCSMGMTVLAN track 3
+ip route 10.228.9.160 255.255.255.224 10.141.41.17 name BRCC-EBCSWSAVLAN track 3
+ip route 0.0.0.0 0.0.0.0 10.141.41.17 name DEFAULT-ROUTE
+ip route 10.0.75.0 255.255.255.0 10.141.41.17 name TEMP-CONNECTION-TO-EBCS-LAB
+ip route 10.228.8.32 255.255.255.252 10.141.41.17 name RCC-EBCSCOREIPSLA
+ip route 10.228.8.224 255.255.255.248 10.141.41.17 name RCCEBCSDISTRIBUTION-IPSLA
+ip route 10.228.9.32 255.255.255.252 10.141.41.17 name BRCC-EBCSCOREIPSLA
+ip route 10.228.9.224 255.255.255.248 10.141.41.17 name BRCCEBCSDISTRIBUTION-IPSLA
+!
+ip access-list extended rcc_brcc_acl
+ remark PERMIT VLAN73 Network to VLAN73 Network
+ permit ip 10.141.41.16 0.0.0.7 10.141.41.16 0.0.0.7
+ remark PERMIT RCC Network to VLAN73 Network
+ permit ip 10.228.8.0 0.0.0.255 10.141.41.16 0.0.0.7
+ remark PERMIT BRCC Network to VLAN73 Network
+ permit ip 10.228.9.0 0.0.0.225 10.141.41.16 0.0.0.7
+ remark DENY ANYTHING ELSE
+ deny   ip any any
+!
+ip sla 1
+ icmp-echo 10.228.8.225 source-ip 10.141.41.22
+ tag RCC-DISTRIBUTION-IPSLA-VLAN
+ timeout 10000
+ frequency 30
+ip sla schedule 1 life forever start-time now
+!
+ip sla 2
+ icmp-echo 10.228.9.225 source-ip 10.141.41.22
+ tag BRCC-DISTRIBUTION-IPSLA-VLAN
+ timeout 10000
+ frequency 30
+ip sla schedule 2 life forever start-time now
+!
+exit
+!
+wr
