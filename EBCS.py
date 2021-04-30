@@ -16,28 +16,53 @@ def openFile():
 def printConfigFile(path, savePath):
     df = pd.read_csv(path)
     
-    for station in df['Station Index']:
-        mrnumber = station
-        ip = df.loc[df['Station Index']==station]['IP'].values[0]
-        ipgw = df.loc[df['Station Index']==station]['IPGW'].values[0]
-        content = openFile()
-        uniqueinput, filename=inputValues(mrnumber, ip, ipgw)
-        content.extend(uniqueinput)
+    for mrnumber in df['Station Index']:
+        iplist = list(df.loc[df['Station Index']==mrnumber]['EBCSIP'])
+        if len(iplist) == 1:
+            ip = df.loc[df['Station Index']==mrnumber]['EBCSIP'].values[0]
+            ipgw = df.loc[df['Station Index']==mrnumber]['IR829IP'].values[0]
+            subnet = df.loc[df['Station Index']==mrnumber]['Subnet Mask'].values[0]
+            lastdigit = 0
+            content = openFile()
+            uniqueinput, filename=inputValues(mrnumber, ip, ipgw, subnet, lastdigit)
+            content.extend(uniqueinput)
 
-        with open(savePath+'/'+filename, 'w') as file:
-            for line in content:
-                file.write(line+'\n')
+            with open(savePath+'/'+filename, 'w') as file:
+                for line in content:
+                    file.write(line+'\n')
+
+        elif len(iplist) > 1:
+            if checkIfDuplicates(iplist) == True:
+                print('There is a duplicate IP')
+                break
+
+            for ip in iplist:
+                index = iplist.index(ip)
+                ipdf = df.loc[df['Station Index']==mrnumber].loc[df['EBCSIP']==ip]
+                ipgw = ipdf['IR829IP'].values[0]
+                subnet = ipdf['Subnet Mask'].values[0]
+                content = openFile()
+                uniqueinput, filename=inputValues(mrnumber, ip, ipgw, subnet, index)
+                content.extend(uniqueinput)
+
+                with open(savePath+'/'+filename, 'w') as file:
+                    for line in content:
+                        file.write(line+'\n')
+
+        
 
     return
 
-def inputValues(mrnumber, ip, ipgw):
+def inputValues(mrnumber, ip, ipgw, subnet, lastdigit):
     outputList=[]
 
     mrnumber=str(mrnumber)
     ip=str(ip)
     ipgw=str(ipgw)
+    subnet=str(subnet)
+    lastdigit=str(lastdigit)
     
-    inppwd = '5' + mrnumber + '0'
+    inppwd = '5' + mrnumber + lastdigit
         
     outputList.extend(['inppwd="'+ inppwd +'"',
                        'inppwd_secondary="'+ inppwd +'"',
@@ -50,11 +75,18 @@ def inputValues(mrnumber, ip, ipgw):
                        'Phonebook="MR'+ mrnumber +'-EBCSU'+ inppwd +'.csv"',
                        #'snmp_location="'+ boothnumber +'"',
                        'ipaddr="'+ ip +'"',
-                       'ipgw="'+ ipgw +'"'])
+                       'ipgw="'+ ipgw +'"',
+                       'ipsubnet="' + subnet +'"'])
 
     filename = 'MR'+ mrnumber +'-EBCSU'+ inppwd +'.cfg'
     return outputList, filename
 
+
+def checkIfDuplicates(listOfElems):
+    if len(listOfElems) == len(set(listOfElems)):
+        return False
+    else:
+        return True
 
 
 # All the stuff inside your window.

@@ -15,6 +15,7 @@ def openFile():
 
 def printConfigFile(path, savePath, yml_check):
     df = pd.read_csv(path)
+    hostcontent = []
     
     for station in df['Station Index']:
         mrnumber = station
@@ -33,9 +34,14 @@ def printConfigFile(path, savePath, yml_check):
             uniqueinput, filename=inputValuesYML(mrnumber, ip, subnet)
         
         content.extend(uniqueinput)
+        hostcontent.extend(['MR'+ str(mrnumber) +' ansible_host='+ip])
 
         with open(savePath+'/'+filename, 'w') as file:
             for line in content:
+                file.write(line+'\n')
+
+    with open(savePath+'/hostlist.txt', 'w') as file:
+            for line in hostcontent:
                 file.write(line+'\n')
 
     return
@@ -58,6 +64,7 @@ def inputValuesRegular(mrnumber, ip, subnet):
                         ' ip address ' + ip + ' ' + subnet,
                         ' no ip redirects',
                         'snmp-server trap-source Vlan73',
+                        'no ip igmp snooping vlan 73',
                         '',
                         'ip route 10.228.8.0 255.255.255.248 ' + routeip + ' name RCC-EBCSP2P track 3',
                         'ip route 10.228.8.0 255.255.255.192 ' + routeip + ' name RCC-EBCSP2P track 3',

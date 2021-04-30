@@ -1,0 +1,264 @@
+******************GENERAL**CONFIG*******************
+
+***input: no
+
+en
+conf t
+no ip http server
+no ip http secure-server
+username admin secret P@ssw0rd
+enable secret P@ssw0rd
+aaa new-model
+ip domain name emd.nyct.com
+crypto key generate rsa
+
+***input: 2048
+
+ip ssh authentication-retries 5
+ip ssh version 2
+line vty 0 15
+ password login local
+ transport input ssh
+ transport output ssh
+!
+interface GigabitEthernet4
+ description *** COPPER NETWORK CONNECTED TO ACCESS NODE ***
+ switchport mode trunk
+ switchport nonegotiate
+ no ip address
+!
+service password-encryption
+no service dhcp
+no aaa new-model
+service-module wlan-ap 0 bootimage autonomous
+!
+no ip bootp server
+ip name-server 10.128.14.250
+ip name-server 10.132.14.250
+ip multicast-routing 
+ip cef
+no ip igmp snooping vlan 73
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+username admin privilege 15 password 7 073F015F5D1E491713
+username monitor privilege 7 secret 5 $1$j4F6$3jtrJR8Bcut/021odMto//
+!
+track 1 ip sla 1 reachability
+ delay down 5 up 5
+!
+track 2 ip sla 2 reachability
+ delay down 5 up 5
+!
+track 3 list boolean or
+ object 1
+ object 2
+!
+interface Loopback0
+ no ip address
+!
+interface GigabitEthernet0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet1
+ description *** EBCS-RPS ***
+ switchport access vlan 73
+ switchport mode access
+ switchport nonegotiate
+ no ip address
+ power inline never
+ spanning-tree portfast
+!
+interface GigabitEthernet2
+ description *** EBCS-UNIT ***
+ switchport access vlan 73
+ switchport mode access
+ switchport nonegotiate
+ no ip address
+ spanning-tree portfast
+!
+interface GigabitEthernet3
+ description *** TEC SOLUTIONS IP PHONE ***
+ switchport access vlan 73
+ switchport mode access
+ switchport nonegotiate
+ no ip address
+ power inline port max 30000
+ spanning-tree portfast
+!
+interface GigabitEthernet4
+ description *** COPPER NETWORK CONNECTED TO ACCESS NODE ***
+ switchport mode trunk
+ switchport nonegotiate
+ no ip address
+!
+interface Wlan-GigabitEthernet0
+ no ip address
+!
+interface Cellular0/1
+ no ip address
+ encapsulation slip
+!
+interface Cellular1/1
+ no ip address
+ encapsulation slip
+!
+interface Async0
+ no ip address
+ encapsulation scada
+!
+interface Async1
+ no ip address
+ encapsulation scada
+!
+interface Dialer1
+ no ip address
+!
+router eigrp 1
+ network 10.162.27.0 0.0.0.31
+ network 10.228.10.0 0.0.1.255
+!
+ip forward-protocol nd
+!
+ip access-list extended verizon_acl
+ remark PERMIT VERIZON MPLS
+ permit ip 10.228.10.0 0.0.0.7 any
+ remark PERMIT RCC SERVERS
+ permit ip 10.228.8.64 0.0.0.33 any
+ remark PERMIT RCC WORKSTATION A
+ permit ip 10.228.8.128 0.0.0.63 any
+ remark PERMIT RCC WORKSTATION B
+ permit ip 10.228.8.192 0.0.0.63 any
+ remark PERMIT BRCC SERVERS
+ permit ip 10.228.9.64 0.0.0.33 any
+ remark PERMIT BRCC WORKSTATION A
+ permit ip 10.228.9.128 0.0.0.63 any
+ remark DENY ANYTHING ELSE
+ deny   ip any any
+!
+snmp-server user fred2015 EEBCS v3 
+snmp-server group EEBCS v3 noauth 
+snmp-server community fred2015 RO
+snmp-server trap-source Vlan73
+snmp-server location N108
+snmp-server contact Network Operation North
+snmp-server enable traps envmon shutdown temperature status
+snmp-server host 10.132.252.194 version 2c fred2015 
+snmp-server host 10.228.8.78 version 3 noauth fred2015 
+snmp-server host 10.228.9.78 version 3 noauth fred2015 
+snmp-server host 10.248.31.245 version 2c fred2015 
+!
+control-plane
+!
+!
+banner exec ^CC *** THIS SYSTEM IS THE PROPERTY OF NY CITY TRANSIT AUTHORITY *** ^C
+banner motd ^CC ***UNAUTHORIZED ACCESS PROHIBITED AUTHORIZED ACCESS ONLY*** ^C
+!         
+line con 0
+ stopbits 1
+line 1 3
+ stopbits 1
+line 4
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ transport output lat pad rlogin lapb-ta mop udptn v120 ssh
+line 8
+ no exec
+ transport preferred none
+ transport output lat pad rlogin lapb-ta mop udptn v120 ssh
+line 9
+ script dialer lte
+ no exec
+ transport preferred none
+ transport output lat pad telnet rlogin lapb-ta mop udptn v120 ssh
+line 15
+ no exec
+ transport preferred none
+ transport output lat pad rlogin lapb-ta mop udptn v120 ssh
+line 1/3 1/6
+ transport preferred none
+ transport output none
+ stopbits 1
+line vty 0 4
+ exec-timeout 0 0
+ password 7 071F205F5D1E161713
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 15
+ exec-timeout 0 0
+ password 7 071F205F5D1E161713
+ login local
+ transport input ssh
+!
+no scheduler max-task-time
+ntp source Loopback0
+ntp server ntp.emd.nyct.com prefer
+no iox hdm-enable
+iox client enable interface GigabitEthernet5
+no iox recovery-enable
+
+wr
+
+###U#N#I#Q#U#E###V#A#R#I#A#B#L#E#S###
+hostname MR420-IR829
+interface Vlan73
+ description EBCS-Vlan
+ ip address 10.141.25.22 255.255.255.240 secondary
+ ip address 10.141.25.18 255.255.255.240
+ no ip redirects
+snmp-server trap-source Vlan73
+no ip igmp snooping vlan 73
+
+ip route 10.228.8.0 255.255.255.248 10.141.25.17 name RCC-EBCSP2P track 3
+ip route 10.228.8.0 255.255.255.192 10.141.25.17 name RCC-EBCSP2P track 3
+ip route 10.228.8.64 255.255.255.192 10.141.25.17 name RCC-EBCSSERVERVLAN track 3
+ip route 10.228.8.128 255.255.255.224 10.141.25.17 name RCC-EBCSMGMTVLAN track 3
+ip route 10.228.8.160 255.255.255.224 10.141.25.17 name RCC-EBCSWSAVLAN track 3
+ip route 10.228.8.192 255.255.255.224 10.141.25.17 name RCC-EBCSWSBVLAN track 3
+ip route 10.228.9.0 255.255.255.248 10.141.25.17 name BRCC-EBCSP2P track 3
+ip route 10.228.9.0 255.255.255.192 10.141.25.17 name BRCC-EBCSP2P track 3
+ip route 10.228.9.64 255.255.255.192 10.141.25.17 name BRCC-EBCSSERVERVLAN track 3
+ip route 10.228.9.128 255.255.255.224 10.141.25.17 name BRCC-EBCSMGMTVLAN track 3
+ip route 10.228.9.160 255.255.255.224 10.141.25.17 name BRCC-EBCSWSAVLAN track 3
+ip route 0.0.0.0 0.0.0.0 10.141.25.17 name DEFAULT-ROUTE
+ip route 10.0.75.0 255.255.255.0 10.141.25.17 name TEMP-CONNECTION-TO-EBCS-LAB
+ip route 10.228.8.32 255.255.255.252 10.141.25.17 name RCC-EBCSCOREIPSLA
+ip route 10.228.8.224 255.255.255.248 10.141.25.17 name RCCEBCSDISTRIBUTION-IPSLA
+ip route 10.228.9.32 255.255.255.252 10.141.25.17 name BRCC-EBCSCOREIPSLA
+ip route 10.228.9.224 255.255.255.248 10.141.25.17 name BRCCEBCSDISTRIBUTION-IPSLA
+!
+ip access-list extended rcc_brcc_acl
+ remark PERMIT VLAN73 Network to VLAN73 Network
+ permit ip 10.141.25.16 0.0.0.7 10.141.25.16 0.0.0.7
+ remark PERMIT RCC Network to VLAN73 Network
+ permit ip 10.228.8.0 0.0.0.255 10.141.25.16 0.0.0.7
+ remark PERMIT BRCC Network to VLAN73 Network
+ permit ip 10.228.9.0 0.0.0.225 10.141.25.16 0.0.0.7
+ remark DENY ANYTHING ELSE
+ deny   ip any any
+!
+ip sla 1
+ icmp-echo 10.228.8.225 source-ip 10.141.25.22
+ tag RCC-DISTRIBUTION-IPSLA-VLAN
+ timeout 10000
+ frequency 30
+ip sla schedule 1 life forever start-time now
+!
+exit
+!
+ip sla 2
+ icmp-echo 10.228.9.225 source-ip 10.141.25.22
+ tag BRCC-DISTRIBUTION-IPSLA-VLAN
+ timeout 10000
+ frequency 30
+ip sla schedule 2 life forever start-time now
+!
+exit
+!
+wr

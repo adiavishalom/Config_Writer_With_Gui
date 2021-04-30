@@ -1,0 +1,10 @@
+MR360 ansible_host=10.206.145.18
+MR416 ansible_host=10.140.113.18
+MR442 ansible_host=10.140.121.66
+MR361 ansible_host=10.206.137.18
+MR417 ansible_host=10.141.49.18
+MR443 ansible_host=10.141.65.50
+MR362 ansible_host=10.206.129.18
+MR418 ansible_host=10.141.41.18
+MR444 ansible_host=10.140.129.66
+MR363 ansible_host=10.206.121.18
