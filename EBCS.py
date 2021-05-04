@@ -49,7 +49,7 @@ def printConfigFile(path, savePath, defaultFile):
                 ipdf = df.loc[df['Station Index']==mrnumber].loc[df['EBCSIP']==ip]
                 ipgw = ipdf['IR829IP'].values[0]
                 subnet = ipdf['Subnet Mask'].values[0]
-                content = openFile()
+                content = openFile(defaultFile)
                 uniqueinput, filename=inputValues(mrnumber, ip, ipgw, subnet, index)
                 content.extend(uniqueinput)
 
