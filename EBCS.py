@@ -12,15 +12,15 @@ def writeFile(savePath, content, filename):
     return
 
 
-def openFile():
-    with open('/Users/adiav/Desktop/Boyce_Technologies_Work/Config_Writer_With_Gui/EBCSDefault.cfg') as file:
+def openFile(path):
+    with open(path) as file:
         content = file.readlines()
 
     content = [x.strip('\n') for x in content]
 
     return content
 
-def printConfigFile(path, savePath):
+def printConfigFile(path, savePath, defaultFile):
     df = pd.read_csv(path)
     
     for mrnumber in df['Station Index']:
@@ -30,7 +30,7 @@ def printConfigFile(path, savePath):
             ipgw = df.loc[df['Station Index']==mrnumber]['IR829IP'].values[0]
             subnet = df.loc[df['Station Index']==mrnumber]['Subnet Mask'].values[0]
             lastdigit = 0
-            content = openFile()
+            content = openFile(defaultFile)
             uniqueinput, filename=inputValues(mrnumber, ip, ipgw, subnet, lastdigit)
             content.extend(uniqueinput)
 
@@ -97,6 +97,7 @@ def checkIfDuplicates(listOfElems):
 
 # All the stuff inside your window.
 layout = [ [sg.Text("Choose a csv file:\t\t"), sg.Input(key="-IN2-" ,change_submits=True), sg.FileBrowse(key="-IN-", file_types=(("CSV Files", "*.csv"),))],
+           [sg.Text("Select Default Configs:\t"), sg.Input(key="-DEFAULT-" ,change_submits=True), sg.FileBrowse(key="-DEFAULT2-", file_types=(("Text Files", "*.txt"),))],
            [sg.Text("Choose a where to save:\t"), sg.Input(key="-IN4-" ,change_submits=True), sg.FolderBrowse(key="-IN3-")],
             [sg.Button('Generate Config'), sg.Exit()]
 ]
@@ -109,6 +110,6 @@ while True:             # Event Loop
     if event in (None, 'Exit'):
         break
     elif event == 'Generate Config':
-        printConfigFile(values['-IN2-'], values['-IN4-'])
+        printConfigFile(values['-IN2-'], values['-IN4-'], values['-DEFAULT-'])
 
 window.Close()
