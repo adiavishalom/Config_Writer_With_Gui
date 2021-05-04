@@ -5,6 +5,13 @@ import pandas as pd
 import os
 
 
+def writeFile(savePath, content, filename):
+    with open(savePath+'/'+filename, 'w') as file:
+                for line in content:
+                    file.write(line+'\n')
+    return
+
+
 def openFile():
     with open('/Users/adiav/Desktop/Boyce_Technologies_Work/Config_Writer_With_Gui/EBCSDefault.cfg') as file:
         content = file.readlines()
@@ -27,9 +34,10 @@ def printConfigFile(path, savePath):
             uniqueinput, filename=inputValues(mrnumber, ip, ipgw, subnet, lastdigit)
             content.extend(uniqueinput)
 
-            with open(savePath+'/'+filename, 'w') as file:
-                for line in content:
-                    file.write(line+'\n')
+            testSavePath = savePath + '/ToTestAgainst'
+            writeFile(testSavePath, uniqueinput, filename)
+            writeFile(savePath, content, filename)
+
 
         elif len(iplist) > 1:
             if checkIfDuplicates(iplist) == True:
@@ -45,11 +53,9 @@ def printConfigFile(path, savePath):
                 uniqueinput, filename=inputValues(mrnumber, ip, ipgw, subnet, index)
                 content.extend(uniqueinput)
 
-                with open(savePath+'/'+filename, 'w') as file:
-                    for line in content:
-                        file.write(line+'\n')
-
-        
+                testSavePath = savePath + '/ToTestAgainst'
+                writeFile(testSavePath, uniqueinput, filename)
+                writeFile(savePath, content, filename) 
 
     return
 
@@ -65,7 +71,7 @@ def inputValues(mrnumber, ip, ipgw, subnet, lastdigit):
     inppwd = '5' + mrnumber + lastdigit
         
     outputList.extend(['inppwd="'+ inppwd +'"',
-                       'inppwd_secondary="'+ inppwd +'"',
+                       'inppwd_secondary="MR'+ mrnumber +'EBCSVOIP"',
                        'inpdisplayname="'+ inppwd +'"',
                        'inpuser="'+ inppwd +'"',
                        'inpuser_secondary="'+ inppwd +'"',
