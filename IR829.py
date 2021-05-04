@@ -5,15 +5,15 @@ import pandas as pd
 import os
 
 
-def openFile():
-    with open('/Users/adiav/Desktop/Boyce_Technologies_Work/Config_Writer_With_Gui/IR829Default.txt') as file:
+def openFile(path):
+    with open(path) as file:
         content = file.readlines()
 
     content = [x.strip('\n') for x in content]
 
     return content
 
-def printConfigFile(path, savePath, yml_check):
+def printConfigFile(path, savePath, yml_check, defaultFile):
     df = pd.read_csv(path)
     hostcontent = []
     
@@ -23,7 +23,7 @@ def printConfigFile(path, savePath, yml_check):
         subnet = df.loc[df['Station Index']==station]['Subnet Mask'].values[0]
         content = []
         if yml_check == False:
-            content = openFile()
+            content = openFile(defaultFile)
             uniqueinput, filename=inputValuesRegular(mrnumber, ip, subnet)
         else:
             content = ['- host: pegasus-rtrs',
@@ -206,6 +206,7 @@ def YML_Format(givenList):
 
 # All the stuff inside your window.
 layout = [ [sg.Text("Choose a csv file:\t\t"), sg.Input(key="-IN2-" ,change_submits=True), sg.FileBrowse(key="-IN-", file_types=(("CSV Files", "*.csv"),))],
+           [sg.Text("Select Default Configs:\t"), sg.Input(key="-DEFAULT-" ,change_submits=True), sg.FileBrowse(key="-DEFAULT2-", file_types=(("Text Files", "*.txt"),))],
            [sg.Text("Choose a where to save:\t"), sg.Input(key="-IN4-" ,change_submits=True), sg.FolderBrowse(key="-IN3-")],
            [sg.Checkbox('YML Config?', default=False, key="-YML-")],
             [sg.Button('Generate Config'), sg.Exit()]
@@ -219,6 +220,6 @@ while True:             # Event Loop
     if event in (None, 'Exit'):
         break
     elif event == 'Generate Config':
-        printConfigFile(values['-IN2-'], values['-IN4-'], values['-YML-'])
+        printConfigFile(values['-IN2-'], values['-IN4-'], values['-YML-'], values['-DEFAULT-'])
 
 window.Close()
